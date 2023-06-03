@@ -129,6 +129,13 @@ end
 
 ### ActiveModel::Validations::ClassMethods#validatesの中身を読む
 
+下記の場合を考える。
+```ruby
+class Person < ApplicationRecord
+  validates :name, presence: true
+end
+```
+
 ```ruby
 def validates(*attributes)
   defaults = attributes.extract_options!.dup
@@ -140,6 +147,7 @@ def validates(*attributes)
 
 railsはアスタリスクを付けることで引数を配列に指定できる。そのため、`attributes`は`[:name, {presence=> true}]`となる。
 [`extract_options!`](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/core_ext/array/extract_options.rb)は下記のようになっている。
+(このメソッドを使用している理由は[Railsガイド](https://railsguides.jp/active_support_core_extensions.html#%E3%82%AA%E3%83%97%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E5%B1%95%E9%96%8B)が参考になる)
 
 ```ruby
 class Hash
@@ -157,4 +165,10 @@ class Array
     end
   end
 end
+```
+
+これにより、
+```ruby
+defaults = {presence: true}
+validations = defaults.slice!(*_validates_default_keys)
 ```
